@@ -1,0 +1,489 @@
+<title>저항용접 원리 노트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃: 좌측 정렬 단일 칼럼 핸드북. 구리색(전극)과 열색(발열)을 서늘한 슬레이트 위에 올림 */
+:root{
+  --bg:#f5f7f9; --surface:#ffffff; --fg:#17212b; --muted:#566574; --line:#d5dce3;
+  --copper:#a8501f; --copper-soft:#f6e6dc; --heat:#c8321f; --cool:#2a6a9c; --ok:#2b7a57; --warn:#a56b00;
+  --code:#eef2f6;
+  --b-lit:#1f6b4a; --b-lit-bg:#dff1e8; --b-der:#8a5a00; --b-der-bg:#fbefd2; --b-gen:#4a4f8a; --b-gen-bg:#e6e8f8;
+  --sans:'IBM Plex Sans KR','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161d; --surface:#17212b; --fg:#e6ecf1; --muted:#9fb0bf; --line:#2c3947;
+  --copper:#e2915f; --copper-soft:#33241b; --heat:#ff7a63; --cool:#6fb0e3; --ok:#5fcf9b; --warn:#e5b04a; --code:#1d2935;
+  --b-lit:#7fdcb0; --b-lit-bg:#17352a; --b-der:#f0c36a; --b-der-bg:#3a2e12; --b-gen:#aab0f0; --b-gen-bg:#252a4d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161d; --surface:#17212b; --fg:#e6ecf1; --muted:#9fb0bf; --line:#2c3947;
+  --copper:#e2915f; --copper-soft:#33241b; --heat:#ff7a63; --cool:#6fb0e3; --ok:#5fcf9b; --warn:#e5b04a; --code:#1d2935;
+  --b-lit:#7fdcb0; --b-lit-bg:#17352a; --b-der:#f0c36a; --b-der-bg:#3a2e12; --b-gen:#aab0f0; --b-gen-bg:#252a4d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+.wrap{max-width:860px;margin:0 auto}
+header.top{padding:40px 0 20px;border-bottom:1px solid var(--line)}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--copper);text-transform:uppercase}
+h1{font-size:clamp(28px,6vw,42px);line-height:1.2;margin:8px 0 12px;letter-spacing:-.01em;text-wrap:balance}
+.lead{color:var(--muted);max-width:62ch;margin:0}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  display:flex;gap:4px;overflow-x:auto;padding:8px 0;margin:0 0 8px;scrollbar-width:thin}
+nav.toc a{flex:none;color:var(--muted);text-decoration:none;font-size:14px;padding:6px 10px;border-radius:6px;white-space:nowrap}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--surface);color:var(--fg);outline:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+section{padding:36px 0 8px;scroll-margin-top:56px}
+h2{font-size:clamp(22px,4.5vw,28px);margin:0 0 6px;line-height:1.3;text-wrap:balance}
+h2 .no{font-family:var(--mono);font-size:.6em;color:var(--copper);margin-right:10px;vertical-align:.15em}
+h3{font-size:18px;margin:28px 0 6px}
+p{margin:10px 0;max-width:68ch}
+ul,ol{max-width:68ch;padding-left:1.3em}li{margin:4px 0}
+.eq{font-family:var(--mono);font-size:15px;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:12px 0;overflow-x:auto;white-space:nowrap}
+.eq small{display:block;font-family:var(--sans);color:var(--muted);font-size:12.5px;margin-top:6px;white-space:normal}
+.badge{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:99px;margin-right:6px;vertical-align:.08em;white-space:nowrap}
+.b-lit{background:var(--b-lit-bg);color:var(--b-lit)}.b-der{background:var(--b-der-bg);color:var(--b-der)}.b-gen{background:var(--b-gen-bg);color:var(--b-gen)}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-weight:500;color:var(--muted);font-size:13px;background:var(--code)}
+tr:last-child td{border-bottom:0}
+.note{border-left:3px solid var(--copper);background:var(--copper-soft);padding:10px 14px;margin:14px 0;border-radius:0 8px 8px 0;max-width:68ch;font-size:15px}
+.note p{margin:4px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;margin:16px 0}
+.card h3{margin:0 0 4px;font-size:16px}
+.card .sub{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 14px}
+label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted)}
+input[type=number],select{font:inherit;font-family:var(--mono);font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);min-width:0;width:100%}
+input[type=range]{width:100%;accent-color:var(--copper)}
+button{font:inherit;font-size:13.5px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);cursor:pointer}
+button:hover{border-color:var(--copper)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.tile{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)}
+.tile b{display:block;font-family:var(--mono);font-size:17px;font-weight:500}
+.tile span{font-size:12.5px;color:var(--muted)}
+svg.chart{width:100%;height:auto;display:block;margin-top:8px}
+svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+svg .ax{stroke:var(--line);stroke-width:1}
+svg .grid{stroke:var(--line);stroke-width:.5;opacity:.7}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.mis{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--surface);margin:10px 0}
+.mis .q{color:var(--heat);font-weight:500}.mis .a{margin-top:4px}
+footer{margin:48px 0 40px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+sub,sup{line-height:0}
+a{color:var(--cool)}
+@media (max-width:560px){svg.chart:not(.dg) text{font-size:16px}.eq{font-size:13.5px;padding:10px 12px}}
+.dgw{overflow-x:auto}.dg{min-width:640px}
+</style>
+<div class="wrap">
+<header class="top">
+  <div class="kicker">Resistance welding · 구조 – 전기 – 열 연성</div>
+  <h1>저항용접 원리 노트</h1>
+  <p class="lead">접촉저항은 어떻게 정해지고, 전류와 가압은 어떻게 영향을 주며, 시간에 따라 어떻게 변하는가. 논문에서 확인한 식과 그 식에서 유도한 관계를 구분해 정리하고, 직접 값을 바꿔 볼 수 있는 계산기를 넣었습니다.</p>
+  <p style="margin-top:14px;font-size:14px">
+    <span class="badge b-lit">문헌</span>논문에서 직접 확인(페이지·식 번호 표기)
+    <span class="badge b-der" style="margin-left:8px">유도</span>위 식에서 계산·유도한 내용
+    <span class="badge b-gen" style="margin-left:8px">일반론</span>교재 수준의 일반 지식(본문 논문에서 확인한 것은 아님)
+  </p>
+</header>
+
+<nav class="toc" aria-label="목차">
+  <a href="#s1">연성 구조</a><a href="#s2">저항의 구성</a><a href="#s3">가압과 경도</a><a href="#s4">전류·온도·시간</a>
+  <a href="#s5">Khan 모델</a><a href="#s6">열 발생</a><a href="#s7">병렬 돌기</a><a href="#s8">오해 바로잡기</a><a href="#s9">참고문헌</a>
+</nav>
+
+<section id="s1">
+  <h2><span class="no">01</span>구조-전기-열은 한 고리로 이어진다</h2>
+  <p>저항용접은 힘을 가한 상태에서 전류를 흘려 접촉부와 벌크의 저항으로 줄열을 만들고, 그 열로 연화·용융시켜 너깃을 만드는 공정입니다. 세 물리량이 서로를 바꾸므로 한쪽만 보면 결과를 틀리게 읽게 됩니다.</p>
+  <div class="card" style="padding:12px"><div class="dgw">
+  <svg class="chart dg" viewBox="0 0 720 300" role="img" aria-label="구조에서 전기, 열로 이어지는 되먹임 고리">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker></defs>
+    <g style="fill:var(--surface);stroke:var(--line)">
+      <rect x="10" y="100" width="200" height="100" rx="10"/><rect x="260" y="100" width="200" height="100" rx="10"/><rect x="510" y="100" width="200" height="100" rx="10"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="110" y="126" style="fill:var(--copper);font-size:13px;font-weight:500">구조</text>
+      <text x="110" y="148">힘 F, 경도 H(항복응력)</text><text x="110" y="166">소성변형 → 접촉면적 A</text><text x="110" y="184">접촉압력 분포</text>
+      <text x="360" y="126" style="fill:var(--cool);font-size:13px;font-weight:500">전기</text>
+      <text x="360" y="148">Rc, Rf, Rb</text><text x="360" y="166">전류 경로, 전류밀도 J</text><text x="360" y="184">전압강하 ΔV = I·R</text>
+      <text x="610" y="126" style="fill:var(--heat);font-size:13px;font-weight:500">열</text>
+      <text x="610" y="148">줄열 Q = I²R</text><text x="610" y="166">온도 T, 열전도</text><text x="610" y="184">연화·용융</text>
+    </g>
+    <g style="stroke:var(--muted);stroke-width:1.5;fill:none" marker-end="url(#ar)">
+      <path d="M210 150H258"/><path d="M460 150H508"/>
+      <path d="M610 100C610 30 110 30 110 98"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="234" y="140">A=F/(ξH)</text><text x="484" y="140">I²R</text>
+      <text x="360" y="44">되먹임: T↑ → H↓(연화), ρ↑(저항률), 필름 파괴 → 접촉면적·저항 변화</text>
+    </g>
+    <text x="360" y="250" text-anchor="middle">힘은 접촉면적의 크기를, 전류는 가열의 세기를 정하고, 온도가 둘을 다시 바꾼다</text>
+  </svg></div>
+  </div>
+</section>
+
+<section id="s2">
+  <h2><span class="no">02</span>저항은 세 성분의 합이다</h2>
+  <div class="eq">R = R<sub>C</sub> + R<sub>F</sub> + R<sub>B</sub><small><span class="badge b-lit">문헌</span>Tan 2004, Eq.(1), p.1998. R<sub>B</sub> = ρ·l/A (Eq.2).</small></div>
+  <div class="tbl"><table>
+    <tr><th>성분</th><th>무엇인가</th><th>주요 의존성</th></tr>
+    <tr><td>R<sub>C</sub> 구속저항</td><td>거친 표면의 접촉점으로만 전류가 흘러 생기는 저항</td><td>접촉점 수·크기, 경도, 저항률, 힘</td></tr>
+    <tr><td>R<sub>F</sub> 필름저항</td><td>산화막·오염막을 지나는 저항. 얇으면 전자 터널링, 전압이 임계를 넘으면 파괴</td><td>필름 두께, 힘, (파괴 전압)</td></tr>
+    <tr><td>R<sub>B</sub> 벌크저항</td><td>판 자체의 저항(경로 길이 l, 단면 A)</td><td>저항률 ρ(T), 전류 경로 형상</td></tr>
+  </table></div>
+  <p>측정한 판-판 동적저항에는 벌크 일부가 항상 들어갑니다(Tan p.1998). 0.2 mm Ni 판의 초기 벌크저항은 약 0.0008 mΩ로 계산되어 접촉저항(0.15–0.26 mΩ)에 비해 매우 작았습니다(Tan p.2001) <span class="badge b-lit">문헌</span></p>
+</section>
+
+<section id="s3">
+  <h2><span class="no">03</span>가압과 경도가 접촉저항을 정한다</h2>
+  <div class="eq">R<sub>C</sub> = 0.89 · ρ · ( ξH / (nF) )<sup>1/2</sup><br>R<sub>F</sub> = ρ<sub>t</sub> · ξ · H / F
+    <small><span class="badge b-lit">문헌</span>Tan 2004, Eq.(3)(4), p.1999. ρ: 접촉점 저항률, H: <b>경도</b>, F: 압축력, ξ: 압력계수(0.2 탄성 ~ 1.0 완전 소성, 상세 연구 없으면 0.7), n: 접촉점 수(연마·교차 실린더는 1에 가깝고 평탄 도금면은 10~20), ρ<sub>t</sub>: 터널링 저항률 [Ω·m²]</small></div>
+  <h3>왜 H가 들어가는가 <span class="badge b-der">유도</span></h3>
+  <p>접촉점의 평균 접촉압력이 ξH이므로 실접촉 총면적은 A = F/(ξH)입니다. 이를 n개의 작은 점으로 나누면 점 하나의 반경은 a = √(A/(nπ))이고, 구속저항(Holm)은 R<sub>C</sub> = ρ/(2na)입니다. 정리하면 R<sub>C</sub> = (√π/2)·ρ·√(ξH/(nF))이고 √π/2 ≈ 0.886이 Tan 식의 0.89입니다.</p>
+  <p>핵심은 이렇습니다. 경도는 저항을 직접 키우지 않고 <b>실접촉 면적을 줄여서</b> 키웁니다. 경도 H는 압입 시험에서 하중을 압입 면적으로 나눈 값(N/m²)이며, 금속에서는 항복응력의 약 3배로 알려져 있습니다 <span class="badge b-gen">일반론</span> 거칠기는 H가 아니라 n과 ξ로 반영됩니다.</p>
+  <h3>가압 의존성</h3>
+  <ul>
+    <li>R<sub>C</sub> ∝ F<sup>−1/2</sup>, R<sub>F</sub> ∝ F<sup>−1</sup> <span class="badge b-der">유도</span> (Tan 식에서 F의 지수만 읽은 것)</li>
+    <li>힘은 저항의 <b>크기(레벨)</b>를 정합니다. 힘이 일정해도 R<sub>C</sub>가 사라지지는 않고, 시간에 따른 변화는 ρ(T)와 H(T)의 온도 의존에서 나옵니다. <span class="badge b-der">유도</span></li>
+    <li>접촉점 수가 많을수록 R<sub>C</sub>는 줄어듭니다(n<sup>−1/2</sup>). 같은 총면적이라도 작은 점이 여럿이면 전류가 더 넓게 퍼지기 때문입니다.</li>
+    <li>Wei &amp; Wu(2012)의 식 (3)~(5)도 같은 구조(R<sub>1</sub>∝W<sup>−1/2</sup>, R<sub>2</sub>∝W<sup>−1</sup>)입니다 <span class="badge b-lit">문헌</span>. 식 (3)의 √(nH<sub>v</sub>)는 접촉점 하나의 저항이고 식 (5)에서 n<sub>i</sub>개로 나누어 병렬로 묶는 것으로 읽으면 Tan과 일치합니다 <span class="badge b-der">유도</span></li>
+  </ul>
+
+  <div class="card">
+    <h3>계산기 1. 가압력에 따른 R<sub>C</sub>, R<sub>F</sub></h3>
+    <p class="sub">기본값은 Tan 2004의 Ni 값입니다. 값을 바꿔 보세요.</p>
+    <div class="grid">
+      <label><span>ρ (×10⁻⁷ Ω·m)</span><input id="c1rho" type="number" step="0.01" value="0.684"></label>
+      <label><span>H (×10⁸ N/m²)</span><input id="c1H" type="number" step="0.1" value="6.9"></label>
+      <label><span>ξ</span><input id="c1xi" type="number" step="0.05" min="0.1" max="1" value="0.7"></label>
+      <label><span>n (접촉점 수)</span><input id="c1n" type="number" step="1" min="1" value="10"></label>
+      <label><span>ρ<sub>t</sub> (×10⁻¹³ Ω·m²)</span><input id="c1rt" type="number" step="1" value="92"></label>
+    </div>
+    <div class="row"><label style="flex:1;min-width:200px"><span>F = <span id="c1Fv">51</span> N</span><input id="c1F" type="range" min="5" max="200" step="1" value="51"></label>
+      <button id="c1p">Ni (Tan 2004)로 되돌리기</button></div>
+    <div class="out" id="c1out"></div>
+    <svg class="chart" id="c1svg" viewBox="0 0 640 320" role="img" aria-label="가압력에 따른 구속저항과 필름저항"></svg>
+    <div class="legend"><span><i style="background:var(--cool)"></i>R<sub>C</sub></span><span><i style="background:var(--heat)"></i>R<sub>F</sub></span><span><i style="background:var(--fg)"></i>합</span></div>
+    <p class="sub" style="margin-top:8px">Tan이 보고한 51 N 정적 이론값은 R<sub>F</sub> 0.09 mΩ, R<sub>C</sub> 0.04–0.06 mΩ(n=10–20), 합 0.13–0.15 mΩ입니다(Table 2, p.2002) <span class="badge b-lit">문헌</span></p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="no">04</span>전류, 온도, 시간</h2>
+  <h3>전류는 식에 직접 들어가지 않는다</h3>
+  <p>위 식 어디에도 전류 I는 없습니다. 전류는 줄열로 온도를 올리고, 온도가 경도 H(T), 저항률 ρ(T), 필름 상태를 바꾸는 경로로만 저항에 영향을 줍니다. Khan, Tan, Wei 세 논문 모두 이 구조입니다 <span class="badge b-der">유도</span></p>
+  <div class="two">
+    <div class="note"><p><b>Ni 저항률의 온도 의존</b> (Tan Table 3)</p><p style="font-family:var(--mono);font-size:13.5px;margin:2px 0">상온 0.684 · 573 K 2.58 · 773 K 3.7<br>1673 K 6.3 · 1773 K 8.63 (×10⁻⁷ Ω·m)</p><p class="sub" style="margin:0"><span class="badge b-lit">문헌</span>p.2006</p></div>
+    <div class="note"><p><b>필름 파괴는 전압 임계</b></p><p style="margin:2px 0;font-size:14.5px">0.163 ± 0.013 V(as-received), 0.231 ± 0.018 V(573 K 40 min 산화). R=V/I이므로 같은 전압이어도 전류가 다르면 피크 저항값이 달라진다.</p><p class="sub" style="margin:0"><span class="badge b-lit">문헌</span>Tan p.2001 · R=V/I 해석은 <span class="badge b-der">유도</span></p></div>
+  </div>
+
+  <h3>동적저항 곡선의 6단계 (Tan 2004, Ni 0.2 mm, DC)</h3>
+  <p>접촉점 가열, 필름 파괴, 연화, 부분 용융, 너깃 성장, 날림 순서입니다(p.2003–2007) <span class="badge b-lit">문헌</span> 아래 도식은 이 단계의 <b>정성적 모양</b>이며 수치가 아닙니다.</p>
+  <div class="card">
+    <div class="row"><label style="min-width:240px"><span>전류 상승 속도
+      </span><select id="c4mode"><option value="slow">느림 (첫 피크 관측)</option><option value="fast">빠름 (점가열 단계가 묻힘)</option></select></label></div>
+    <svg class="chart" id="c4svg" viewBox="0 0 640 330" role="img" aria-label="동적저항 6단계 정성적 도식"></svg>
+    <div class="legend"><span><i style="background:var(--heat)"></i>R<sub>F</sub> 필름</span><span><i style="background:var(--cool)"></i>R<sub>C</sub> 구속</span><span><i style="background:var(--ok)"></i>R<sub>B</sub> 벌크</span><span><i style="background:var(--fg)"></i>합</span></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>단계</th><th>변화</th><th>R<sub>C</sub></th><th>R<sub>F</sub></th></tr>
+    <tr><td>1 → 피크 A</td><td>접촉점만 먼저 가열, 벌크는 차가움. ρ(T)↑. 필름은 아직 존재</td><td>↑</td><td>유지</td></tr>
+    <tr><td>2a</td><td>필름의 전기적·기계적 파괴(임계 전압 약 0.16 V)</td><td>—</td><td>급락</td></tr>
+    <tr><td>2b</td><td>asperity 연화, 실접촉면적 증가</td><td>↓</td><td>—</td></tr>
+    <tr><td>2c → 밸리 B</td><td>부분 용융. 벌크 서서히 증가</td><td>완만 ↓</td><td>—</td></tr>
+    <tr><td>3 → 피크 C</td><td>너깃 성장. 액상 저항률이 높아 R↑</td><td>소멸 근접</td><td>—</td></tr>
+    <tr><td>4</td><td>날림. 전류 경로 단축으로 R 급락</td><td>—</td><td>—</td></tr>
+  </table></div>
+  <ul>
+    <li>점가열(1단계)은 <b>느린 전류 상승·깨끗한 표면</b>에서만 보입니다. 2 A/ms에서는 파괴가 약 21 ms에 일어나 포착되지만 100 A/ms에서는 약 0.42 ms라 해상도에 묻힙니다(Tan Fig.17, p.2005) <span class="badge b-lit">문헌</span></li>
+    <li>Tan의 계산(773 K에서 R<sub>C</sub>가 0.19–0.26 mΩ 상승)보다 관측 상승(0.08–0.10 mΩ)이 작았습니다. 실제 접촉점 온도가 연화온도(793 K)보다 낮았다는 뜻입니다(p.2004) <span class="badge b-lit">문헌</span></li>
+    <li>대형 점용접(LSRSW)은 연화 직후 벌크가 지배하지만, 소형 점용접(SSRSW)은 압력이 낮아 용융 직전까지 접촉저항이 남습니다(p.2006) <span class="badge b-lit">문헌</span></li>
+  </ul>
+  <h3>Wei &amp; Wu (2012)의 시뮬레이션</h3>
+  <p>초기 급락은 필름저항 때문이고, 이후 구속·벌크가 증가했다가 피크를 찍습니다. 피크는 <b>경도 저하</b>와 벌크 증가율 둔화에서 오며 액상 형성 때문이 아닙니다. 너깃 개시는 무차원 시간 약 0.27(R<sub>1</sub>=30), 0.43(R<sub>1</sub>=1)입니다(Fig.3–4, p.3320–3321). 축 위 전류밀도는 자기 확산 때문에 약 6 cycle 늦게 반응합니다(Fig.5a, p.3321) <span class="badge b-lit">문헌</span> faying면 축 부근 접촉저항의 점프가 이 지연과 관련 있어 보이고, 축에서 떨어진 위치(r=0.9)의 곡선에는 뚜렷한 피크가 없습니다(Fig.5b). 이는 그림을 읽은 해석입니다 <span class="badge b-der">유도</span> Tan과 Wei는 조건(DC·51 N·0.2 mm Ni vs AC·1000 N·모델)이 달라 곡선을 겹쳐 비교할 수 없습니다.</p>
+</section>
+<section id="s5">
+  <h2><span class="no">05</span>Khan 모델: 접촉저항 하나를 온도와 압력의 함수로</h2>
+  <div class="eq">T ≤ T<sub>sol</sub>:  R = { max[0, (T<sub>sol</sub>−T)/(T<sub>sol</sub>−T<sub>0</sub>)] · (R<sub>0</sub>−R<sub>sol</sub>) + R<sub>sol</sub> } / p̄<sup>n</sup><br>T ≥ T<sub>sol</sub>:  R = { max[0, (T<sub>liq</sub>−T)/(T<sub>liq</sub>−T<sub>sol</sub>)] · (R<sub>sol</sub>−R<sub>liq</sub>) + R<sub>liq</sub> } / p̄<sup>n</sup>
+    <small><span class="badge b-lit">문헌</span>Khan et al. 1999, p.203. p̄: 접촉압력 / 전극 인가압력의 비, n: 강 1.2, Al 합금 1.3, R<sub>0</sub>: 정적 접촉저항(강 250 μΩ), R<sub>sol</sub>·R<sub>liq</sub>: 용융 개시·액상에서의 접촉저항(강은 R<sub>liq</sub>=0). T<sub>0</sub>는 이 페이지에 정의가 없고 정적 R<sub>0</sub>의 기준온도로 읽힙니다.</small></div>
+  <p>R<sub>0</sub> &gt; R<sub>sol</sub> &gt; R<sub>liq</sub>이므로 온도가 오르면 R은 <b>단조 감소</b>합니다. 이 식에는 ρ(T)와 H(T)가 따로 없고 둘의 순효과를 "온도에 따라 감소"하는 하나의 법칙으로 뭉쳤습니다. 필름과 구속저항도 구분하지 않습니다.</p>
+  <h3>Tan·Wei의 비단조와 모순인가</h3>
+  <p>아닙니다. 비교하는 양이 다릅니다.</p>
+  <div class="tbl"><table>
+    <tr><th></th><th>Tan</th><th>Wei &amp; Wu</th><th>Khan</th></tr>
+    <tr><td>다루는 양</td><td>동적저항 R(t) (실측)</td><td>동적저항·접촉저항 (모델)</td><td>접촉저항 R(T, p̄) (모델 입력식)</td></tr>
+    <tr><td>Rf/Rc 분리</td><td>분리</td><td>분리 (R<sub>1</sub>, R<sub>2</sub>)</td><td>분리 안 함</td></tr>
+    <tr><td>필름 파괴 임계</td><td>있음(전압)</td><td>필름 저항률의 온도 의존으로 모사</td><td>없음</td></tr>
+    <tr><td>점가열 상승 단계</td><td>있음(느린 전류에서)</td><td>있음</td><td>없음</td></tr>
+  </table></div>
+  <p>동적저항은 벌크(온도에 따라 증가)와 접촉(온도에 따라 감소)의 합이므로, 접촉저항이 단조여도 총저항은 상승 후 하락의 비단조가 될 수 있습니다 <span class="badge b-der">유도</span> Khan 식은 Tan·Wei의 <b>감소 가지</b>(필름 파괴 + 연화 이후)에 해당하고 상승 가지는 빠져 있다고 보는 것이 합리적입니다 <span class="badge b-der">유도</span></p>
+  <div class="card">
+    <h3>계산기 2. Khan 접촉저항 R(T)</h3>
+    <p class="sub">기본값은 <b>예시</b>입니다. 논문 값은 R<sub>0</sub>=250 μΩ(강), R<sub>liq</sub>=0(강), n=1.2뿐이고, 나머지는 임의의 예시입니다.</p>
+    <div class="grid">
+      <label><span>R<sub>0</sub> (μΩ)</span><input id="c2R0" type="number" value="250"></label>
+      <label><span>R<sub>sol</sub> (μΩ)</span><input id="c2Rs" type="number" value="40"></label>
+      <label><span>R<sub>liq</sub> (μΩ)</span><input id="c2Rl" type="number" value="0"></label>
+      <label><span>T<sub>0</sub> (°C)</span><input id="c2T0" type="number" value="20"></label>
+      <label><span>T<sub>sol</sub> (°C)</span><input id="c2Ts" type="number" value="1430"></label>
+      <label><span>T<sub>liq</sub> (°C)</span><input id="c2Tl" type="number" value="1500"></label>
+      <label><span>지수 n</span><input id="c2n" type="number" step="0.05" value="1.2"></label>
+    </div>
+    <div class="row"><label style="flex:1;min-width:200px"><span>p̄ = <span id="c2pv">3.0</span></span><input id="c2p" type="range" min="0.5" max="8" step="0.1" value="3"></label></div>
+    <div class="out" id="c2out"></div>
+    <svg class="chart" id="c2svg" viewBox="0 0 640 320" role="img" aria-label="Khan 접촉저항 곡선"></svg>
+    <div class="legend"><span><i style="background:var(--muted)"></i>p̄ = 1</span><span><i style="background:var(--copper)"></i>선택한 p̄</span></div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="no">06</span>열 발생: 전류밀도, 면적, 되먹임의 부호</h2>
+  <div class="eq">Q = I² · R　　국부 발열밀도 = ρ · J²　　J = I / A
+    <small><span class="badge b-gen">일반론</span>줄열. 정전류에서 직렬 구간의 발열은 각 구간의 저항에 비례합니다.</small></div>
+  <h3>전류를 좁은 곳으로 몰면</h3>
+  <p>같은 전류 I를 면적 A로 흘리면 J = I/A이므로 발열밀도는 1/A²로 커집니다. 그런데 발열은 전류가 지나가는 곳에서만 일어나므로 <b>뜨거워지는 영역의 면적은 A에 비례해 줄어듭니다.</b> "발열밀도는 증가하는데 승온 면적은 줄어든다"는 하나의 사실의 두 얼굴입니다 <span class="badge b-der">유도</span></p>
+  <div class="card">
+    <h3>계산기 3. 접촉 반경에 따른 발열 집중</h3>
+    <p class="sub">접촉 반경 a의 원형 점접촉에 전류 I를 흘릴 때(Holm 구속저항 R = ρ/(2a)). 열이 빠져나가지 않는 단열 상한 추정입니다.</p>
+    <div class="grid">
+      <label><span>전류 I (A)</span><input id="c3I" type="number" value="500"></label>
+      <label><span>ρ (×10⁻⁸ Ω·m)</span><input id="c3rho" type="number" step="0.1" value="1.7"></label>
+      <label><span>ρ·c (×10⁶ J/m³K)</span><input id="c3c" type="number" step="0.05" value="3.45"></label>
+    </div>
+    <div class="row"><label style="flex:1;min-width:200px"><span>접촉 반경 a = <span id="c3av">150</span> μm</span><input id="c3a" type="range" min="30" max="500" step="5" value="150"></label></div>
+    <div class="out" id="c3out"></div>
+    <p class="sub">기본 물성은 일반 교재의 Cu 값(ρ≈1.7×10⁻⁸ Ω·m, ρ·c≈3.45×10⁶ J/m³K)이며 상온·단열 가정입니다. 실제로는 온도에 따라 ρ가 변하고 열이 퍼지므로 값은 대략치입니다.</p>
+  </div>
+  <h3>되먹임의 부호는 회로 구조가 정한다</h3>
+  <div class="tbl"><table>
+    <tr><th>상황</th><th>저항이 줄면</th><th>부호</th></tr>
+    <tr><td>정전류, 직렬 구간 하나</td><td>Q = I²R 감소</td><td>음(자기 제한)</td></tr>
+    <tr><td>같은 전압에 병렬인 인접 요소·돌기</td><td>전류가 몰려 q = V²/R 증가</td><td>양(쏠림)</td></tr>
+    <tr><td>벌크 저항률 ρ(T)</td><td>온도↑ → ρ↑ → 발열↑</td><td>양</td></tr>
+  </table></div>
+  <p>그래서 접촉저항이 온도에 따라 떨어지는 것은 정전류의 직렬 경로에서는 그 계면의 발열을 줄이고, 발열은 벌크 쪽으로 넘어갑니다(열 handoff). 균일한 접촉에서 전도도 g가 커지면 J = I/A는 그대로이고 열유속 q = J²/g는 오히려 줄어듭니다 <span class="badge b-der">유도</span></p>
+  <p>또 하나. 벌크저항이 커지는 이유는 전류밀도가 커서가 아닙니다. 옴의 법칙 E = ρJ에서 ρ는 재료 성질이고, 증가는 <b>온도 ρ(T)</b>와 <b>전류 경로가 좁아지는 형상</b>에서 옵니다 <span class="badge b-gen">일반론</span></p>
+  <div class="card">
+    <h3>계산기 4. 정전류와 정전압: 한 구간의 저항이 커지면</h3>
+    <p class="sub">직렬 3구간(R<sub>1</sub>, R<sub>2</sub>, 그 밖의 벌크). R<sub>1</sub>을 k배로 만들었을 때 R<sub>2</sub>의 발열이 어떻게 변하는지 봅니다. 예시 값입니다.</p>
+    <div class="grid">
+      <label><span>R<sub>1</sub> (mΩ)</span><input id="c4R1" type="number" step="0.01" value="0.20"></label>
+      <label><span>R<sub>2</sub> (mΩ)</span><input id="c4R2" type="number" step="0.01" value="0.15"></label>
+      <label><span>R<sub>벌크</sub> (mΩ)</span><input id="c4Rb" type="number" step="0.01" value="0.10"></label>
+      <label><span>기준 전류 (kA)</span><input id="c4I" type="number" step="0.1" value="3"></label>
+      <label><span>제어</span><select id="c4m"><option value="cc">정전류 (CC)</option><option value="cv">정전압 (CV)</option></select></label>
+    </div>
+    <div class="row"><label style="flex:1;min-width:200px"><span>R<sub>1</sub> 배율 k = <span id="c4kv">2.0</span></span><input id="c4k" type="range" min="0.5" max="4" step="0.1" value="2"></label></div>
+    <div class="tbl"><table id="c4tbl"></table></div>
+    <p class="sub" id="c4msg"></p>
+  </div>
+</section>
+
+<section id="s7">
+  <h2><span class="no">07</span>병렬 돌기와 편가압</h2>
+  <p>프로젝션 용접은 여러 돌기가 병렬 가지입니다. 총전류가 같아도 돌기마다 접촉저항이 다르면 전류는 I<sub>i</sub> ∝ 1/R<sub>i</sub>로 나뉘고, 먼저 닿거나 더 눌린 돌기가 더 많은 전류를 받습니다.</p>
+  <ul>
+    <li>Mikno(2024)는 돌기 2개 너트(높이 0.9 mm, 밑면 직경 2.5 mm, 11 kA, 140 ms, 3 kN)에서 전극 경사 0~2.5°를 시험했습니다. 먼저 닿는 돌기가 전류 대부분을 가져가고 더 빨리 연화되어 불균일 발열이 생겼으며, 약 1.5°에서 강도가 뚜렷이 감소했습니다 <span class="badge b-lit">문헌</span> 단 돌기 간격은 변수가 아니었고 접촉저항은 직접 분석하지 않았습니다.</li>
+    <li>TWI는 돌기 설계 기준으로 초기 전극력에서의 <b>좌굴 안정성</b>과, 붕괴 전에 상대면을 용접온도까지 가열할 <b>충분한 질량</b>을 듭니다 <span class="badge b-lit">문헌</span></li>
+    <li>하중 분배(강체판, 돌기 강성 동일, 전 돌기 접촉 가정): f<sub>i</sub> = F/N + F·e·x<sub>i</sub> / Σx² <span class="badge b-der">유도</span>. 병렬 가지의 발열 비례 q ∝ f<sup>0.5</sup>(구속저항 지배) ~ f<sup>1</sup>(필름 지배)는 Tan의 F 지수에서 온 것입니다 <span class="badge b-der">유도</span></li>
+  </ul>
+  <h3>직경 · 높이 · 피치는 무엇을 바꾸나</h3>
+  <ul>
+    <li><b>직경 d</b>: 돌기당 전류가 같다면 J ∝ 1/d², 체적 발열밀도 ρJ² ∝ 1/d⁴, 가열해야 할 체적 ∝ d²·h입니다. 직경이 커지면 저항은 낮아지지만 발열밀도는 급감하므로 “직경↑ → 저항↓”만으로 판단하면 안 됩니다. 소성 점접촉 단계의 R은 직경이 아니라 힘이 정하고(Tan 식 3·4), 직경은 접촉이 돌기 크기에 도달하는 붕괴 단계부터 영향을 줍니다 <span class="badge b-der">유도</span></li>
+    <li><b>높이 h</b>: 기둥 저항 ρh/A는 보통 작고 붕괴하며 줄어드는 동적 항입니다. 더 큰 역할은 틸팅 보상 여유(높이차/높이), 붕괴에 필요한 열량, 좌굴 안정성입니다 <span class="badge b-der">유도</span></li>
+    <li><b>피치</b>: 총전류가 고정이면 돌기당 전류는 개수 N으로 정해지고, 피치는 지렛대 팔(위 하중 분배식의 x<sub>i</sub>, 틸팅 높이차 Δz)과 인접 돌기의 열 중첩을 바꿉니다 <span class="badge b-der">유도</span>. 피치 효과를 직접 다룬 문헌은 확인하지 못했으므로 해석·실험으로 확인할 항목입니다.</li>
+  </ul>
+  <div class="card">
+    <h3>계산기 5. 편심 하중과 경사가 돌기별 하중·발열에 주는 영향</h3>
+    <p class="sub">한 방향으로 놓인 돌기 열(columns)을 가정한 단순 모델입니다. 직렬 저항이 있으면 실제 편차는 이보다 작아지는 상한 추정입니다. 값은 예시입니다.</p>
+    <div class="grid">
+      <label><span>돌기 열 수</span><input id="c5c" type="number" min="1" max="8" step="1" value="3"></label>
+      <label><span>열 당 돌기 수</span><input id="c5r" type="number" min="1" max="6" step="1" value="2"></label>
+      <label><span>열 간격 (mm)</span><input id="c5p" type="number" step="0.05" value="1.0"></label>
+      <label><span>총 하중 F (N)</span><input id="c5F" type="number" step="1" value="50"></label>
+      <label><span>하중 편심 e (mm)</span><input id="c5e" type="number" step="0.01" value="0.10"></label>
+      <label><span>경사 θ (°)</span><input id="c5t" type="number" step="0.05" value="0.30"></label>
+      <label><span>돌기 높이 h (μm)</span><input id="c5h" type="number" step="5" value="100"></label>
+      <label><span>발열 지배</span><select id="c5m"><option value="0.5">구속저항 지배</option><option value="1">필름 지배</option></select></label>
+    </div>
+    <div class="out" id="c5out"></div>
+    <svg class="chart" id="c5svg" viewBox="0 0 640 260" role="img" aria-label="열별 하중과 상대 발열"></svg>
+    <div class="legend"><span><i style="background:var(--cool)"></i>하중 f / 평균</span><span><i style="background:var(--heat)"></i>상대 발열 q / 평균</span></div>
+  </div>
+</section>
+
+<section id="s8">
+  <h2><span class="no">08</span>자주 하는 오해</h2>
+  <div class="mis"><div class="q">접촉저항은 면적에 반비례한다</div><div class="a">구속저항은 접촉 <b>반경</b>에 반비례(R=ρ/2a)하고, 필름과 벌크 저항이 면적에 반비례합니다. 그리고 미시 점접촉 단계의 R<sub>C</sub>는 돌기 직경이 아니라 힘과 경도로 정해집니다.</div></div>
+  <div class="mis"><div class="q">식의 H는 거칠기이다</div><div class="a">H는 경도입니다. 거칠기는 접촉점 수 n과 압력계수 ξ로 반영됩니다.</div></div>
+  <div class="mis"><div class="q">힘이 일정하면 구속저항에 영향이 없다</div><div class="a">힘은 저항의 레벨을 정합니다. 시간에 따른 변화는 ρ(T)와 H(T)에서 나옵니다.</div></div>
+  <div class="mis"><div class="q">접촉저항이 줄면 전류밀도가 급증해 과열된다</div><div class="a">정전류의 직렬 경로에서는 R이 줄면 그 계면 발열이 줄어 자기 제한입니다. 병렬 요소 사이의 전류 쏠림과는 구분해야 합니다.</div></div>
+  <div class="mis"><div class="q">전류밀도가 커서 벌크저항이 증가한다</div><div class="a">증가 원인은 온도에 따른 ρ(T)와 좁아진 전류 경로의 형상입니다. 저항률은 J에 의존하지 않습니다.</div></div>
+  <div class="mis"><div class="q">한 구간의 전압강하가 커지면 다른 구간 전압강하가 줄어든다</div><div class="a">정전류에서는 구간별 전압강하가 각자의 저항으로 독립입니다(V=I·R). 전압이 나뉘는 것은 정전압 제어일 때입니다. 계산기 4에서 확인하세요.</div></div>
+  <div class="mis"><div class="q">Khan(단조)과 Tan·Wei(비단조)는 서로 모순이다</div><div class="a">Khan은 접촉저항의 구성 법칙이고, Tan·Wei는 동적저항 곡선입니다. 동적저항에는 벌크가 더해집니다.</div></div>
+  <div class="mis"><div class="q">접촉면적이 넓으면 무조건 유리하다</div><div class="a">넓은 통로는 저항과 발열밀도를 낮춥니다. 용융에는 충분한 발열 세기와 넓이가 함께 필요합니다.</div></div>
+</section>
+
+<section id="s9">
+  <h2><span class="no">09</span>참고문헌과 표기</h2>
+  <ol>
+    <li>Tan W, Zhou Y, Kerr HW, Lawson S. A study of dynamic resistance during small scale resistance spot welding of thin Ni sheets. J. Phys. D: Appl. Phys. 37 (2004) 1998–2008.</li>
+    <li>Wei PS, Wu TH. Electrical contact resistance effect on resistance spot welding. Int. J. Heat Mass Transfer 55 (2012) 3316–3324.</li>
+    <li>Khan JA, Xu L, Chao YJ. Prediction of nugget development during resistance spot welding using coupled thermal–electrical–mechanical model. Sci. Technol. Weld. Join. 4(4) (1999) 201–207.</li>
+    <li>Mikno Z. Analysis of projection welding in relation to the non-parallelism of electrodes. Int. J. Adv. Manuf. Technol. 135 (2024) 2087–2095. DOI 10.1007/s00170-024-14653-x</li>
+    <li>TWI. FAQ: What projection profile suits projection welding? <a href="https://twi-global.com/technical-knowledge/faqs/faq-what-projection-profile-suits-projection-welding" target="_blank" rel="noopener">twi-global.com</a></li>
+    <li>Holm R, Holm E. Electric Contacts: Theory and Application (Tan이 인용). 일반론 배지가 붙은 내용(Holm 구속저항, 경도와 항복응력의 관계)은 이 페이지 작성에서 원문을 직접 확인하지 않았습니다.</li>
+  </ol>
+  <div class="note"><p><b>이 페이지에 대해</b></p>
+  <p>학습·공유 목적의 정리입니다. 논문 원문의 그림은 싣지 않았고, 그림 번호와 페이지로만 위치를 표기했습니다. 도식은 정성적 모양이며 수치는 논문 값이 아닙니다. 계산기의 기본값 중 "예시"로 표시한 것은 임의의 값입니다. 계산기는 위 식의 단순화이므로 설계 결정의 근거로 쓰지 말고 정성적 이해에 활용하세요. 특정 기업의 공정 조건과 설계 값은 포함하지 않았습니다.</p></div>
+</section>
+<footer>저항용접 원리 노트 · 내용 정정과 의견은 환영합니다.</footer>
+</div>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function niceStep(span,n){const s0=span/n,mag=Math.pow(10,Math.floor(Math.log10(s0))),e=s0/mag;return (e>=7.5?10:e>=3.5?5:e>=1.5?2:1)*mag}
+function ticks(lo,hi,n){const st=niceStep(hi-lo,n),a=Math.ceil(lo/st-1e-9)*st,o=[];for(let v=a;v<=hi+st*1e-6;v+=st)o.push(+v.toFixed(10));return o}
+function fmtT(v){return Math.abs(v)>=1000?String(v):String(+v.toPrecision(3))}
+/* 선 그래프: series=[{pts,stroke,dash,w}], opts={xmin,xmax,ymin,ymax,xl,yl,vlines:[{x,label}],regions:[{x0,x1,label}]} */
+function chart(svg,series,o){
+  const W=640,H=+svg.getAttribute('viewBox').split(' ')[3],L=56,R=14,T=14,B=44;
+  const px=x=>L+(x-o.xmin)/(o.xmax-o.xmin)*(W-L-R), py=y=>H-B-(y-o.ymin)/(o.ymax-o.ymin)*(H-B-T);
+  let s='';
+  const xt=ticks(o.xmin,o.xmax,o.xn||6), yt=ticks(o.ymin,o.ymax,o.yn||5);
+  if(!o.noxt){xt.forEach(v=>{s+=`<line class="grid" x1="${px(v)}" x2="${px(v)}" y1="${T}" y2="${H-B}"/><text x="${px(v)}" y="${H-B+16}" text-anchor="middle">${fmtT(v)}</text>`})}
+  if(!o.noyt){yt.forEach(v=>{s+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${py(v)}" y2="${py(v)}"/><text x="${L-6}" y="${py(v)+4}" text-anchor="end">${fmtT(v)}</text>`})}
+  s+=`<line class="ax" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/><line class="ax" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}"/>`;
+  (o.regions||[]).forEach((r,i)=>{s+=`<line class="ax" style="stroke-dasharray:3 3" x1="${px(r.x0)}" x2="${px(r.x0)}" y1="${T}" y2="${H-B}"/><text x="${(px(r.x0)+px(r.x1))/2}" y="${T+12}" text-anchor="middle">${esc(r.label)}</text>`});
+  (o.vlines||[]).forEach(v=>{s+=`<line style="stroke:var(--copper);stroke-dasharray:4 3" x1="${px(v.x)}" x2="${px(v.x)}" y1="${T}" y2="${H-B}"/><text x="${px(v.x)+4}" y="${T+24}" style="fill:var(--copper)">${esc(v.label)}</text>`});
+  series.forEach(se=>{const d=se.pts.map((p,i)=>(i?'L':'M')+px(p[0]).toFixed(1)+' '+py(Math.min(Math.max(p[1],o.ymin),o.ymax)).toFixed(1)).join('');
+    s+=`<path d="${d}" fill="none" style="stroke:${se.stroke};stroke-width:${se.w||2.2};${se.dash?'stroke-dasharray:'+se.dash:''}" stroke-linejoin="round"/>`});
+  if(o.xl)s+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle">${esc(o.xl)}</text>`;
+  if(o.yl)s+=`<text transform="translate(14 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle">${esc(o.yl)}</text>`;
+  svg.innerHTML=s;
+}
+function tiles(el,arr){el.innerHTML=arr.map(a=>`<div class="tile"><b>${a[1]}</b><span>${a[0]}</span></div>`).join('')}
+const num=id=>parseFloat($(id).value);
+
+/* ---- 계산기 1 ---- */
+const PRE1={c1rho:0.684,c1H:6.9,c1xi:0.7,c1n:10,c1rt:92,c1F:51};
+function calc1(){
+  const rho=num('c1rho')*1e-7,H=num('c1H')*1e8,xi=num('c1xi'),n=Math.max(1,num('c1n')),rt=num('c1rt')*1e-13,F=num('c1F');
+  $('c1Fv').textContent=F;
+  const Rc=f=>0.89*rho*Math.sqrt(xi*H/(n*f))*1e3, Rf=f=>rt*xi*H/f*1e3;
+  const rc=Rc(F),rf=Rf(F);
+  tiles($('c1out'),[['R_C 구속 (mΩ)',rc.toFixed(3)],['R_F 필름 (mΩ)',rf.toFixed(3)],['합 (mΩ)',(rc+rf).toFixed(3)],['R_F / 합',((rf/(rc+rf))*100).toFixed(0)+' %']]);
+  const A=[],Bp=[],C=[];let mx=0;
+  for(let f=5;f<=200;f+=2){const a=Rc(f),b=Rf(f);A.push([f,a]);Bp.push([f,b]);C.push([f,a+b]);mx=Math.max(mx,a+b)}
+  const top=ticks(0,mx,5).pop();
+  chart($('c1svg'),[{pts:C,stroke:'var(--fg)'},{pts:A,stroke:'var(--cool)'},{pts:Bp,stroke:'var(--heat)'}],{xmin:5,xmax:200,ymin:0,ymax:top>=mx?top:top*1.2,xl:'가압력 F (N)',yl:'저항 (mΩ)',vlines:[{x:F,label:F+' N'}]});
+}
+['c1rho','c1H','c1xi','c1n','c1rt','c1F'].forEach(i=>$(i).addEventListener('input',calc1));
+$('c1p').addEventListener('click',()=>{for(const k in PRE1)$(k).value=PRE1[k];calc1()});
+
+/* ---- 계산기 2 ---- */
+function calc2(){
+  const R0=num('c2R0'),Rs=num('c2Rs'),Rl=num('c2Rl'),T0=num('c2T0'),Ts=num('c2Ts'),Tl=num('c2Tl'),n=num('c2n'),p=num('c2p');
+  $('c2pv').textContent=p.toFixed(1);
+  if(!(T0<Ts&&Ts<Tl)){$('c2out').innerHTML='<div class="tile"><b>입력 오류</b><span>T0 &lt; Tsol &lt; Tliq 이어야 합니다</span></div>';return}
+  const R=(T,pp)=>(T<=Ts?(Math.max(0,(Ts-T)/(Ts-T0))*(R0-Rs)+Rs):(Math.max(0,(Tl-T)/(Tl-Ts))*(Rs-Rl)+Rl))/Math.pow(pp,n);
+  const a=[],b=[];const Tmax=Tl+Math.max(50,(Tl-T0)*0.05);
+  const xs=[];for(let i=0;i<=120;i++)xs.push(T0+(Tmax-T0)*i/120);xs.push(Ts,Tl);xs.sort((u,v)=>u-v);
+  xs.forEach(T=>{a.push([T,R(T,1)]);b.push([T,R(T,p)])});
+  tiles($('c2out'),[['p̄^n (저항을 나누는 값)',Math.pow(p,n).toFixed(2)],['R(T0) at 선택 p̄ (μΩ)',R(T0,p).toFixed(1)],['R(Tsol) at 선택 p̄ (μΩ)',R(Ts,p).toFixed(1)]]);
+  chart($('c2svg'),[{pts:a,stroke:'var(--muted)',dash:'5 4'},{pts:b,stroke:'var(--copper)'}],{xmin:T0,xmax:Tmax,ymin:0,ymax:ticks(0,R0,5).pop(),xl:'온도 T (°C)',yl:'접촉저항 R (μΩ)',vlines:[{x:Ts,label:'Tsol'}]});
+}
+['c2R0','c2Rs','c2Rl','c2T0','c2Ts','c2Tl','c2n','c2p'].forEach(i=>$(i).addEventListener('input',calc2));
+
+/* ---- 도식: 동적저항 6단계(정성적) ---- */
+function calc4s(){
+  const fast=$('c4mode').value==='fast', pts=(f)=>{const o=[];for(let i=0;i<=300;i++){const t=i/30;o.push([t,f(t)])}return o};
+  const tf=fast?0.5:2.4;
+  const Rf=t=>t<tf?1:Math.exp(-(t-tf)*3.5);
+  const Rc=t=>fast?0.35+0.55*Math.exp(-t*0.9):(t<1.6?0.35+0.6*(t/1.6):0.35+0.6*Math.exp(-(t-1.6)*0.9));
+  const Rb=t=>0.1+0.35/(1+Math.exp(-(t-6)))+0.1*Math.exp(-Math.pow((t-7.6)/0.5,2));
+  const tot=t=>Rf(t)+Rc(t)+Rb(t);
+  const regs=fast?[{x0:0,x1:0.5,label:''},{x0:0.5,x1:3.8,label:'2a-2b'},{x0:3.8,x1:5.4,label:'2c'},{x0:5.4,x1:7.9,label:'3'},{x0:7.9,x1:10,label:'4'}]
+                  :[{x0:0,x1:1.6,label:'1'},{x0:1.6,x1:3.2,label:'2a'},{x0:3.2,x1:5.2,label:'2b'},{x0:5.2,x1:6.4,label:'2c'},{x0:6.4,x1:8.4,label:'3'},{x0:8.4,x1:10,label:'4'}];
+  chart($('c4svg'),[{pts:pts(tot),stroke:'var(--fg)',w:2.6},{pts:pts(Rf),stroke:'var(--heat)',dash:'5 4',w:1.8},{pts:pts(Rc),stroke:'var(--cool)',dash:'5 4',w:1.8},{pts:pts(Rb),stroke:'var(--ok)',dash:'5 4',w:1.8}],
+    {xmin:0,xmax:10,ymin:0,ymax:2.2,xl:'시간 (정성적, 단위 없음)',yl:'저항 (정성적)',noxt:true,noyt:true,regions:regs});
+}
+$('c4mode').addEventListener('change',calc4s);
+
+/* ---- 계산기 3 ---- */
+function calc3(){
+  const I=num('c3I'),rho=num('c3rho')*1e-8,c=num('c3c')*1e6,a=num('c3a')*1e-6;
+  $('c3av').textContent=(a*1e6).toFixed(0);
+  const J=I/(Math.PI*a*a),q=rho*J*J,Rcon=rho/(2*a),P=I*I*Rcon,dT=q/c;
+  const ref=150e-6;
+  tiles($('c3out'),[['전류밀도 J (A/mm²)',(J/1e6).toFixed(0)],['발열밀도 ρJ² (W/mm³)',(q/1e9).toFixed(1)],['구속저항 ρ/2a (μΩ)',(Rcon*1e6).toFixed(1)],['총 발열 I²R (W)',P.toFixed(0)],['단열 승온속도 (K/μs)',(dT*1e-6).toFixed(2)],['a=150 μm 대비 발열밀도',(Math.pow(ref/a,4)).toFixed(2)+' ×'],['a=150 μm 대비 가열 면적',(Math.pow(a/ref,2)).toFixed(2)+' ×']]);
+}
+['c3I','c3rho','c3c','c3a'].forEach(i=>$(i).addEventListener('input',calc3));
+
+/* ---- 계산기 4 ---- */
+function calc4(){
+  const R1=num('c4R1'),R2=num('c4R2'),Rb=num('c4Rb'),I0=num('c4I'),k=num('c4k'),cc=$('c4m').value==='cc';
+  $('c4kv').textContent=k.toFixed(1);
+  const V0=I0*1e3*(R1+R2+Rb)*1e-3;
+  const base={I:I0*1e3,R1:R1,R2:R2};
+  const I1=cc?I0*1e3:V0/((k*R1+R2+Rb)*1e-3);
+  const row=(n,b,m,u,d)=>`<tr><td>${n}</td><td>${b.toFixed(d)} ${u}</td><td>${m.toFixed(d)} ${u}</td><td>${b?((m/b-1)*100).toFixed(0):0} %</td></tr>`;
+  const b1=I0*1e3,b=(r)=>b1*b1*r*1e-3;
+  const m1=I1,mm=(r)=>m1*m1*r*1e-3;
+  $('c4tbl').innerHTML='<tr><th></th><th>R₁ 기준 (k=1)</th><th>R₁ × k</th><th>변화</th></tr>'+
+    row('전류 I',b1,m1,'A',0)+
+    row('V₁ = I·R₁',b1*R1*1e-3,m1*k*R1*1e-3,'V',3)+
+    row('V₂ = I·R₂',b1*R2*1e-3,m1*R2*1e-3,'V',3)+
+    row('Q₁ = I²R₁',b(R1),mm(k*R1),'W',0)+
+    row('Q₂ = I²R₂',b(R2),mm(R2),'W',0);
+  $('c4msg').textContent=cc?'정전류: R₁이 커져도 V₂와 Q₂는 변하지 않습니다. 구간들이 전압을 나눠 갖는 것이 아니라 각자 I·R입니다.':'정전압: R₁이 커지면 전류가 줄어 V₂와 Q₂가 함께 줄어듭니다. "전압이 나뉜다"는 설명은 이 경우에만 맞습니다.';
+}
+['c4R1','c4R2','c4Rb','c4I','c4m','c4k'].forEach(i=>$(i).addEventListener('input',calc4));
+
+/* ---- 계산기 5 ---- */
+function solveLoads(xs,F,e){
+  const act=xs.map(()=>true);
+  for(let it=0;it<30;it++){
+    const idx=xs.map((_,i)=>i).filter(i=>act[i]),N=idx.length;
+    if(!N)return xs.map(()=>0);
+    const sx=idx.reduce((s,i)=>s+xs[i],0),sxx=idx.reduce((s,i)=>s+xs[i]*xs[i],0),det=N*sxx-sx*sx;
+    let a,b;if(Math.abs(det)<1e-12){a=F/N;b=0}else{a=(F*sxx-sx*F*e)/det;b=(N*F*e-sx*F)/det}
+    const f=xs.map((x,i)=>act[i]?a+b*x:0);let ch=false;
+    idx.forEach(i=>{if(f[i]<0){act[i]=false;ch=true}});
+    if(!ch)return f;
+  }
+  return xs.map(()=>0);
+}
+function calc5(){
+  const nc=Math.max(1,Math.round(num('c5c'))),nr=Math.max(1,Math.round(num('c5r'))),p=num('c5p'),F=num('c5F'),e=num('c5e'),th=num('c5t'),h=num('c5h'),m=parseFloat($('c5m').value);
+  const cols=[];for(let i=0;i<nc;i++)cols.push((i-(nc-1)/2)*p);
+  const xs=[];cols.forEach(x=>{for(let j=0;j<nr;j++)xs.push(x)});
+  const N=xs.length,f=nc===1?xs.map(()=>F/N):solveLoads(xs,F,e);
+  const fc=cols.map((_,i)=>f[i*nr]), mean=F/N;
+  const q=fc.map(v=>Math.pow(Math.max(v,0),m)), qm=q.reduce((s,v)=>s+v,0)/q.length||1;
+  const fmax=Math.max(...fc),fmin=Math.min(...fc),span=(nc-1)*p,dz=span*Math.tan(th*Math.PI/180)*1000;
+  tiles($('c5out'),[['하중 최대/최소',fmin>1e-9?(fmax/fmin).toFixed(2):'접촉 상실'],['발열 최대/최소',Math.min(...q)>1e-9?(Math.max(...q)/Math.min(...q)).toFixed(2):'∞ (무발열 돌기)'],['경사 높이차 Δz (μm)',dz.toFixed(1)],['Δz / h',(dz/h*100).toFixed(1)+' %']]);
+  const svg=$('c5svg'),W=640,H=260,L=56,Rm=14,T=16,B=40,top=Math.max(1.6,Math.ceil(Math.max(...fc.map(v=>v/mean),...q.map(v=>v/qm))*5)/5);
+  const bw=(W-L-Rm)/nc,py=v=>H-B-v/top*(H-B-T);
+  let s=ticks(0,top,4).map(v=>`<line class="grid" x1="${L}" x2="${W-Rm}" y1="${py(v)}" y2="${py(v)}"/><text x="${L-6}" y="${py(v)+4}" text-anchor="end">${v}</text>`).join('');
+  s+=`<line class="ax" x1="${L}" x2="${W-Rm}" y1="${H-B}" y2="${H-B}"/><line style="stroke:var(--muted);stroke-dasharray:3 3" x1="${L}" x2="${W-Rm}" y1="${py(1)}" y2="${py(1)}"/>`;
+  fc.forEach((v,i)=>{const x0=L+i*bw+bw*0.14,w=bw*0.34;
+    s+=`<rect x="${x0}" y="${py(v/mean)}" width="${w}" height="${Math.max(0,H-B-py(v/mean))}" style="fill:var(--cool)"/>`;
+    s+=`<rect x="${x0+w+3}" y="${py(q[i]/qm)}" width="${w}" height="${Math.max(0,H-B-py(q[i]/qm))}" style="fill:var(--heat)"/>`;
+    s+=`<text x="${L+i*bw+bw/2}" y="${H-B+16}" text-anchor="middle">x=${cols[i].toFixed(2)} mm</text>`});
+  s+=`<text transform="translate(14 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle">평균 대비 비율</text>`;
+  svg.innerHTML=s;
+}
+['c5c','c5r','c5p','c5F','c5e','c5t','c5h','c5m'].forEach(i=>$(i).addEventListener('input',calc5));
+
+calc1();calc2();calc3();calc4();calc4s();calc5();
+})();
+</script>
